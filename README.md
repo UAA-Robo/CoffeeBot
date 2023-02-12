@@ -1,2 +1,2 @@
-# robot_arm_codebase
+# CoffeeBot
 Robot Arm Codebase
