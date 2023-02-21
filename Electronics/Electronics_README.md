@@ -21,7 +21,7 @@ The plan is to have 2 loops a control loop and a power loop with gobuilda PDB an
 
 ### Back Power
 - The wireing to the servo PDB and the motor sontroller is powered with +5v so don't connect it to anything without a plan also
-
+- Below is an example of a correct implamentation of the servo PDB
 
 ## BoM
 
