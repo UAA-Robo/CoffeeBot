@@ -2,25 +2,26 @@
 
 ---
 
-**Warning Do not mess with the electronics unless you know what you are doing beacuse you could fry expensave electronics.**
+**Warning Do not mess with the electronics unless you know what you are doing because you could fry expensive electronics.**
 
 ---
 
+
 ## Plan
 
-### Summary 
+### Summary
 
-The plan is to have 2 loops a control loop and a power loop with gobuilda PDB and Servo PDB.
+The plan is to have 2 loops: a control loop and a power loop with gobuilda PDB and Servo PDB.
 
-### Cableing system
+### Cabling system
 
-### Controll System
+### Control System
 
-
-## ⚠ Warnings ⚠
+## Warnings 
 
 ### Back Power
-- The wireing to the servo PDB and the motor sontroller is powered with +5v so don't connect it to anything without a plan also
+
+- The wiring to the servo PDB and the motor controller is powered with +5v so don't connect it to anything without a plan also
 - Look at https://www.gobilda.com/servo-power-distribution-board-8-channel/ for wireing info
 - or just ask B100GH
 
