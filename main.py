@@ -18,16 +18,16 @@ if(__name__ ==  "__main__"):
     l2 = 100
 
     # Base Position
-    baseX = 260
-    baseY = 260
+    baseX = 0
+    baseY = 0
     baseZ = 0
     # Elbow Position
     elbowX = 0
     elbowY = 0
     elbowZ = 0
     # End of Arm position
-    handX = 270
-    handY = 270
+    handX = 10
+    handY = 10
     handZ = 0
 
     XKey = 0
@@ -62,7 +62,8 @@ if(__name__ ==  "__main__"):
         destX = handX + XKey
         destY = handY + YKey
         destZ = handZ + ZKey
-        # Move hand towards destination if destination is in range
+
+        # Move hand towards destination if destination is in range or moving to destination will bring it in range
         if( (handX - baseX) ** 2 + (handY - baseY) ** 2 + (handZ - baseZ) ** 2< (l1 + l2 - 2)**2
             or
             (destX - baseX) ** 2 + (destY - baseY) ** 2 + (destZ - baseZ) ** 2 < (l1 + l2 - 2)**2
@@ -96,21 +97,23 @@ if(__name__ ==  "__main__"):
         # Rendering
         SCREEN.fill((0, 0, 0))
         scaling = 1
+        YOffset = (SCREEN_HEIGHT - 20) / 2
+        XOffset = 265
         # X / Y Plane
         pygame.draw.rect(SCREEN,   (50, 50, 50), (10,10,SCREEN_WIDTH/2 - 15, SCREEN_HEIGHT - 20))
-        pygame.draw.line(SCREEN,   (255, 255, 255), (elbowX * scaling, elbowY * scaling), (handX * scaling, handY * scaling), 2)
-        pygame.draw.circle(SCREEN, (255, 0, 0), (handX * scaling, handY * scaling), 8)
-        pygame.draw.line(SCREEN,   (255, 255, 255), (elbowX * scaling, elbowY * scaling), (baseX * scaling, baseY * scaling), 2)
-        pygame.draw.circle(SCREEN, (0, 0, 255), (baseX * scaling, baseY * scaling), 8)
-        pygame.draw.circle(SCREEN, (0, 255, 0), (elbowX * scaling, elbowY * scaling), 8)
+        pygame.draw.line(SCREEN,   (255, 255, 255), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), (XOffset + handX * scaling, handY * scaling + YOffset), 2)
+        pygame.draw.circle(SCREEN, (255, 0, 0), (XOffset + handX * scaling, handY * scaling + YOffset), 8)
+        pygame.draw.line(SCREEN,   (255, 255, 255), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), (XOffset + baseX * scaling, baseY * scaling + YOffset), 2)
+        pygame.draw.circle(SCREEN, (0, 0, 255), (XOffset + baseX * scaling, baseY * scaling + YOffset), 8)
+        pygame.draw.circle(SCREEN, (0, 255, 0), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), 8)
         # Z / Y Plane
         ZYOffset = SCREEN_WIDTH/2 + 265
         pygame.draw.rect(SCREEN, (50, 50, 50), (SCREEN_WIDTH/2 + 5, 10, SCREEN_WIDTH/2 - 15, SCREEN_HEIGHT - 20))
-        pygame.draw.circle(SCREEN, (0, 0, 255), (ZYOffset + baseZ * scaling, baseY * scaling), 8)
-        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowZ * scaling, elbowY * scaling),(ZYOffset + handZ * scaling, handY * scaling), 2)
-        pygame.draw.circle(SCREEN, (0, 255, 0), (ZYOffset + elbowZ * scaling, elbowY * scaling), 8)
-        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowZ * scaling, elbowY * scaling),(ZYOffset + baseZ * scaling, baseY * scaling), 2)
-        pygame.draw.circle(SCREEN, (255, 0, 0), (ZYOffset + handZ * scaling, handY * scaling), 8)
+        pygame.draw.circle(SCREEN, (0, 0, 255), (ZYOffset + baseZ * scaling, baseY * scaling + YOffset), 8)
+        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowZ * scaling, elbowY * scaling + YOffset),(ZYOffset + handZ * scaling, handY * scaling + YOffset), 2)
+        pygame.draw.circle(SCREEN, (0, 255, 0), (ZYOffset + elbowZ * scaling, elbowY * scaling + YOffset), 8)
+        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowZ * scaling, elbowY * scaling + YOffset),(ZYOffset + baseZ * scaling, baseY * scaling + YOffset), 2)
+        pygame.draw.circle(SCREEN, (255, 0, 0), (ZYOffset + handZ * scaling, handY * scaling + YOffset), 8)
 
         pygame.display.update()  # Updates Screen
 
