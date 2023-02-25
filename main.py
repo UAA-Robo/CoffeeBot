@@ -14,7 +14,7 @@ if(__name__ ==  "__main__"):
     FPS = 180
     CLOCK = pygame.time.Clock()
 
-    l1 = 75 # Arm Segment Length
+    l1 = 100 # Arm Segment Length
     l2 = 100
 
     # Base Position
@@ -26,61 +26,69 @@ if(__name__ ==  "__main__"):
     elbowY = 0
     elbowZ = 0
     # End of Arm position
-    handX = 100
-    handY = 100
+    handX = 270
+    handY = 270
     handZ = 0
 
-
+    XKey = 0
+    YKey = 0
+    ZKey = 0
     run = True
     while run:
         # Ensures the simulation runs no faster than FPS
-        #CLOCK.tick(FPS)
+        CLOCK.tick(FPS)
         mousePos = pygame.mouse.get_pos()
-
-        #If destination is within bounds, move the endpoint towards it
-        destX = mousePos[0]
-        destY = mousePos[1]
-        if(
-            # Restricts arm length to real bounds
-            math.sqrt((handX - baseX) ** 2 + (handY - baseY) ** 2) < l1 + l2
-            or
-            # Allows repositioning when mouse is moved back in range
-            math.sqrt((destX - baseX) ** 2 + (destY - baseY) ** 2) < l1 + l2
-        ):
-            # Move hand towards destination
-            if(destX < handX):
-                handX -= 1
-            elif(destX > handY):
-                handX += 1
-            if (destY < handY):
-                handY -= 1
-            elif(destY > handY):
-                handY += 1
-
-            # Distance between base and hand squared
-            c = baseX - handX
-            p = baseY - handY
-            d = c ** 2 + p ** 2
-
-            # Inner max is to prevent a divide by 0 error
-            # Clamp the angle between the base and hand between the range of -1, 1
-            a = max(-1, min(1, (d + l1**2 - l2**2) / max((2 * l1 * math.pow(d, 0.5)), 0.001)))
-            # Angle from elbow to hand
-            # X angle - Y angle * arm orientation
-            t = math.atan2(p, c) - math.acos(a) * -1
-
-            # Displace elbow according to angle to hand
-            elbowX = handX + l1 * math.cos(t)
-            elbowY = handY + l1 * math.sin(t)
 
         # Handle Keypresses
         for event in pygame.event.get():  # Keypresses
             if event.type == pygame.QUIT:  # If the exit button is pressed this will cause the game to quit
                 run = False
-            if event.type == pygame.KEYDOWN:  # If a key is pressed down do stuff.
-                pass
             if event.type == pygame.KEYUP:  # If a key is released do stuff.
-                pass
+                if event.key == pygame.K_w or event.key == pygame.K_s:
+                    YKey = 0
+                if event.key == pygame.K_a or event.key == pygame.K_d:
+                    XKey = 0
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    ZKey = 0
+            if event.type == pygame.KEYDOWN:  # If a key is pressed down do stuff.
+                if event.key == pygame.K_w or event.key == pygame.K_s:
+                    YKey = -1 if event.key == pygame.K_w else 1
+                if event.key == pygame.K_a or event.key == pygame.K_d:
+                    XKey = -1 if event.key == pygame.K_a else 1
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    ZKey = -1 if event.key == pygame.K_LEFT else 1
+
+        #If destination is within bounds, move the endpoint towards it
+        destX = handX + XKey
+        destY = handY + YKey
+        destZ = handZ + ZKey
+        # Move hand towards destination if destination is in range
+        if( (handX - baseX) ** 2 + (handY - baseY) ** 2 + (handZ - baseZ) ** 2< (l1 + l2 - 2)**2
+            or
+            (destX - baseX) ** 2 + (destY - baseY) ** 2 + (destZ - baseZ) ** 2 < (l1 + l2 - 2)**2
+        ):
+            handX = destX
+            handY = destY
+            handZ = destZ
+
+        # Distance between base and hand squared
+        c = baseX - handX
+        p = baseY - handY
+        d = c ** 2 + p ** 2
+
+        # Inner max is to prevent a divide by 0 error
+        # Clamp the angle between the base and hand between the range of -1, 1
+        a = max(-1, min(1, (d + l1**2 - l2**2) / max((2 * l1 * math.pow(d, 0.5)), 0.001)))
+        # Angle from elbow to hand
+        # X angle - Y angle * arm orientation
+        t = math.atan2(p, c) - math.acos(a) * -1
+
+        # Displace elbow according to angle to hand
+        elbowX = handX + l1 * math.cos(t)
+        elbowY = handY + l1 * math.sin(t)
+
+
+
 
 
 
