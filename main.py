@@ -27,30 +27,18 @@ if(__name__ ==  "__main__"):
     elbowY = 0
     elbowZ = 0
     # End of Arm position
-    handX = 10
+    handX = 50
     handY = 0
-    handZ = 10
+    handZ = -50
 
     XKey = 0
     YKey = 0
     ZKey = 0
     run = True
 
-    def CartesianToPolar(x, y, z):
-        r = math.sqrt(x * x + y * y + z * z)
-        long = math.acos(x / math.sqrt(x * x + y * y) * (-1 if y < 0 else 1))
-        lat = math.acos(z / r)
-        return (r, long, lat)
-
-    def PolarToCartesian(r, long, lat):
-        x = r * math.sin(lat) * math.cos(long)
-        y = r * math.sin(lat) * math.sin(long)
-        z = r * math.sin(lat)
-        return (x, y, z)
-
     def CartesianToCylindrical(x, y, z):
         #Returns p, theta, and z
-        return (math.sqrt(x*x + y*y), math.atan(y/x if x != 0 else y / 0.0001), z)
+        return (math.sqrt(x*x + y*y), math.atan2(y, x), z)
 
     def CylindricalToCartesian(p, theta, z):
         return(p * math.cos(theta), p * math.sin(theta), z)
@@ -102,10 +90,8 @@ if(__name__ ==  "__main__"):
             handY = destY
             handZ = destZ
 
-
         #HandXRotated, HandYRotated, HandZRotated = handX, handY, handZ
         #elbowXRotated, elbowYRotated, elbowZRotated = elbowX, elbowY, elbowZ
-
 
         rot = CartesianToCylindrical(handX, handY, handZ)[1]
         HandXRotated, HandYRotated, HandZRotated = RotateCartesian(handX, handY, handZ, -rot)
@@ -131,24 +117,24 @@ if(__name__ ==  "__main__"):
         elbowX, elbowY, elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated, rot)# + 0.0174532925)
 
         AB = math.sqrt(
-            (handX - baseX) * (handX - baseX) +
-            (handY - baseY) * (handY - baseY) +
-            (handZ - baseZ) * (handZ - baseZ)
+            (handX - baseX) ** 2 +
+            (handY - baseY) ** 2 +
+            (handZ - baseZ) ** 2
                        )
         if(AB > l1 + l2 + 0.0001):
             print("DANGER ARM EXCEEDED LENGTH BY :", (l1 + l2) - AB)
         ElbowWarn = math.sqrt(
-            (elbowX - baseX) * (elbowX - baseX) +
-            (elbowY - baseY) * (elbowY - baseY) +
-            (elbowZ - baseZ) * (elbowZ - baseZ)
+            (elbowX - baseX) ** 2 +
+            (elbowY - baseY) ** 2 +
+            (elbowZ - baseZ) ** 2
         )
         if(ElbowWarn > l1 + 0.0001):
             print("DANGER ELBOW EXCEEDED LENGTH BY :", l1 - ElbowWarn)
 
         handWarn = math.sqrt(
-            (handX - elbowX) * (handX - elbowX) +
-            (handY - elbowY) * (handY - elbowY) +
-            (handZ - elbowZ) * (handZ - elbowZ)
+            (handX - elbowX) ** 2 +
+            (handY - elbowY) ** 2 +
+            (handZ - elbowZ) ** 2
                        )
         if(handWarn > l2 + 0.0001):
             print("DANGER HAND EXCEEDED LENGTH BY :", l2 - handWarn)
@@ -167,6 +153,11 @@ if(__name__ ==  "__main__"):
         pygame.draw.line(SCREEN,   (255, 255, 255), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), (XOffset + baseX * scaling, baseY * scaling + YOffset), 2)
         pygame.draw.circle(SCREEN, (0, 0, 255), (XOffset + baseX * scaling, baseY * scaling + YOffset), 8)
         pygame.draw.circle(SCREEN, (0, 255, 0), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), 8)
+
+        # Rotation Angle
+        rotX, rotY, rotZ = CylindricalToCartesian(15, rot, 0)
+        pygame.draw.line(SCREEN, (255, 255, 0), (XOffset, YOffset), (XOffset + rotX, rotY + YOffset), 2)
+
         # Z / Y Plane Front View
         ZYOffset = XHorizontalOffset + 265
         pygame.draw.rect(SCREEN, (50, 50, 50), (XHorizontalOffset + 5, 10, XHorizontalOffset - 15, SCREEN_HEIGHT - 20))
