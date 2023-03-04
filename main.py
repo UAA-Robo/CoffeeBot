@@ -163,10 +163,6 @@ if(__name__ ==  "__main__"):
         pygame.draw.circle(SCREEN, (0, 0, 255), (XOffset + baseX * scaling, baseY * scaling + YOffset), 8)
         pygame.draw.circle(SCREEN, (0, 255, 0), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), 8)
 
-        # Rotation Angle
-        rotX, rotY, rotZ = CylindricalToCartesian(15, rotHand, 0)
-        pygame.draw.line(SCREEN, (255, 255, 0), (XOffset, YOffset), (XOffset + rotX, rotY + YOffset), 2)
-
         # Z / Y Plane Front View
         ZYOffset = XHorizontalOffset + 265
         pygame.draw.rect(SCREEN, (50, 50, 50), (XHorizontalOffset + 5, 10, XHorizontalOffset - 15, SCREEN_HEIGHT - 20))
@@ -184,8 +180,9 @@ if(__name__ ==  "__main__"):
         pygame.draw.line(SCREEN, (255, 255, 255), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), (XZOffset + baseX * scaling, baseZ * scaling + YOffset), 2)
         pygame.draw.circle(SCREEN, (255, 0, 0), (XZOffset + handX * scaling, handZ * scaling + YOffset), 8)
 
-        draw_text(f"Y Axis   : {elbowY:.2f}", 5,5)
-        draw_text(f"Rotation : {rotHand:.2f}", 5, 35)
+        draw_text(f"Top View X / Y", 20,10)
+        draw_text(f"Front View Y / Z", XHorizontalOffset + 15, 10)
+        draw_text(f"Side View X / Z", XHorizontalOffset * 2 + 10, 10)
 
 
         pygame.display.update()  # Updates Screen
