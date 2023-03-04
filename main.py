@@ -30,9 +30,9 @@ if(__name__ ==  "__main__"):
     baseY = 0
     baseZ = 0
     # Elbow Position
-    elbowX = 0
+    elbowX = 25
     elbowY = 0
-    elbowZ = 0
+    elbowZ = 25
     # End of Arm position
     handX = 50
     handY = 0
@@ -100,12 +100,11 @@ if(__name__ ==  "__main__"):
         #HandXRotated, HandYRotated, HandZRotated = handX, handY, handZ
         #elbowXRotated, elbowYRotated, elbowZRotated = elbowX, elbowY, elbowZ
 
-        rot = CartesianToCylindrical(handX, handY, handZ)[1]
-        HandXRotated, HandYRotated, HandZRotated = RotateCartesian(handX, handY, handZ, -rot)
-        print(elbowY)
-        print(math.degrees(rot))
-        elbowXRotated, elbowYRotated, elbowZRotated = RotateCartesian(elbowX, elbowY, elbowZ, -rot)
-        print(elbowYRotated)
+        rotHand = CartesianToCylindrical(handX, handY, handZ)[1]
+        rotElbow = CartesianToCylindrical(elbowX, elbowY, elbowZ)[1]
+
+        HandXRotated, HandYRotated, HandZRotated = RotateCartesian(handX, handY, handZ, -rotHand)
+        elbowXRotated, elbowYRotated, elbowZRotated = RotateCartesian(elbowX, elbowY, elbowZ, -rotElbow)
 
         # Distance between base and hand squared
         c = baseX - HandXRotated
@@ -122,8 +121,9 @@ if(__name__ ==  "__main__"):
         # Displace elbow according to angle to hand
         elbowXRotated = HandXRotated + l1 * math.cos(t)
         elbowZRotated = HandZRotated + l1 * math.sin(t)
-        handX, handY, handZ = RotateCartesian(HandXRotated, HandYRotated, HandZRotated, rot)# + 0.0174532925)
-        elbowX, elbowY, elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated, rot)# + 0.0174532925)
+
+        handX, handY, handZ = RotateCartesian(HandXRotated, HandYRotated, HandZRotated, rotHand + 0.0174532925)
+        elbowX, elbowY, elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated, rotElbow + (rotHand - rotElbow) + 0.0174532925)
 
         AB = math.sqrt(
             (handX - baseX) ** 2 +
@@ -164,7 +164,7 @@ if(__name__ ==  "__main__"):
         pygame.draw.circle(SCREEN, (0, 255, 0), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), 8)
 
         # Rotation Angle
-        rotX, rotY, rotZ = CylindricalToCartesian(15, rot, 0)
+        rotX, rotY, rotZ = CylindricalToCartesian(15, rotHand, 0)
         pygame.draw.line(SCREEN, (255, 255, 0), (XOffset, YOffset), (XOffset + rotX, rotY + YOffset), 2)
 
         # Z / Y Plane Front View
@@ -184,7 +184,9 @@ if(__name__ ==  "__main__"):
         pygame.draw.line(SCREEN, (255, 255, 255), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), (XZOffset + baseX * scaling, baseZ * scaling + YOffset), 2)
         pygame.draw.circle(SCREEN, (255, 0, 0), (XZOffset + handX * scaling, handZ * scaling + YOffset), 8)
 
-        draw_text("Score : ", 5,5)
+        draw_text(f"Y Axis   : {elbowY:.2f}", 5,5)
+        draw_text(f"Rotation : {rotHand:.2f}", 5, 35)
+
 
         pygame.display.update()  # Updates Screen
 
