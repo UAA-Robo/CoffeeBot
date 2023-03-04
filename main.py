@@ -15,6 +15,13 @@ if(__name__ ==  "__main__"):
     FPS = 180
     CLOCK = pygame.time.Clock()
 
+    # Font
+    gameFont = pygame.font.Font("Fonts/LEMONMILK-Medium.otf", 30)
+    # Draws Text on screen at x, y
+    def draw_text(text, _x, _y, color=(255, 255, 255), font=gameFont):
+        img = font.render(text, True, color)
+        SCREEN.blit(img, (_x, _y))
+
     l1 = 100 # Arm Segment Length
     l2 = 100
 
@@ -95,7 +102,10 @@ if(__name__ ==  "__main__"):
 
         rot = CartesianToCylindrical(handX, handY, handZ)[1]
         HandXRotated, HandYRotated, HandZRotated = RotateCartesian(handX, handY, handZ, -rot)
+        print(elbowY)
+        print(math.degrees(rot))
         elbowXRotated, elbowYRotated, elbowZRotated = RotateCartesian(elbowX, elbowY, elbowZ, -rot)
+        print(elbowYRotated)
 
         # Distance between base and hand squared
         c = baseX - HandXRotated
@@ -112,7 +122,6 @@ if(__name__ ==  "__main__"):
         # Displace elbow according to angle to hand
         elbowXRotated = HandXRotated + l1 * math.cos(t)
         elbowZRotated = HandZRotated + l1 * math.sin(t)
-
         handX, handY, handZ = RotateCartesian(HandXRotated, HandYRotated, HandZRotated, rot)# + 0.0174532925)
         elbowX, elbowY, elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated, rot)# + 0.0174532925)
 
@@ -174,6 +183,8 @@ if(__name__ ==  "__main__"):
         pygame.draw.circle(SCREEN, (0, 255, 0), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), 8)
         pygame.draw.line(SCREEN, (255, 255, 255), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), (XZOffset + baseX * scaling, baseZ * scaling + YOffset), 2)
         pygame.draw.circle(SCREEN, (255, 0, 0), (XZOffset + handX * scaling, handZ * scaling + YOffset), 8)
+
+        draw_text("Score : ", 5,5)
 
         pygame.display.update()  # Updates Screen
 
