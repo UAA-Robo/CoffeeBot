@@ -1,57 +1,13 @@
 import math
 import pygame
+from ikscreen import IKScreen
+from model import Model
 
-if(__name__ ==  "__main__"):
+if (__name__ == "__main__"):
     pygame.init()  # Initialize Pygame Modules
 
-    # Window Initialization
-    SCREEN_HEIGHT = 520
-    SCREEN_WIDTH = 1020
-    SCREEN_WIDTH = 1525
-    SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    # Set Window Name
-    pygame.display.set_caption('Robot Simulation')
-    # Set Pygame Clock
-    FPS = 180
-    CLOCK = pygame.time.Clock()
-
-    # Font
-    gameFont = pygame.font.Font("Fonts/LEMONMILK-Medium.otf", 30)
-    # Draws Text on screen at x, y
-    def draw_text(text, _x, _y, color=(255, 255, 255), font=gameFont):
-        img = font.render(text, True, color)
-        SCREEN.blit(img, (_x, _y))
-
-    # Arm Segment Length
-    l1 = 100 # Base to Elbow
-    l2 = 100 # Elbow to Hand
-
-    # Base Position
-    baseX = 0
-    baseY = 0
-    baseZ = 0
-    # Elbow Position
-    elbowX = 25
-    elbowY = 0
-    elbowZ = 25
-    # End of Arm position
-    handX = 50
-    handY = 0
-    handZ = -50
-
-    def CartesianToCylindrical(x, y, z):
-        # Converts Cartesian Coordiantes to Crylindrical coordinates Returns p, theta, and z
-        return (math.sqrt(x*x + y*y), math.atan2(y, x), z)
-
-    def CylindricalToCartesian(p, theta, z):
-        # Converts cylindrical coordinates to cartesian coordinates
-        return(p * math.cos(theta), p * math.sin(theta), z)
-
-    def RotateCartesian(x, y, z, rads):
-        # Rotates a point around 0,0 using radians
-        return (x * math.cos(rads) - y * math.sin(rads),
-                x * math.sin(rads) + y * math.cos(rads),
-                z)
+    ikscreen = IKScreen()
+    model = Model()
 
     # Variables Needed for controls and runtime loop
     XKey = 0
@@ -60,8 +16,7 @@ if(__name__ ==  "__main__"):
     run = True
     while run:
         # Ensures the simulation runs no faster than FPS
-        CLOCK.tick(FPS)
-        mousePos = pygame.mouse.get_pos()
+
 
         # Handle Keypresses
         for event in pygame.event.get():  # Keypresses
@@ -82,116 +37,16 @@ if(__name__ ==  "__main__"):
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     YKey = -1 if event.key == pygame.K_LEFT else 1
 
-        #If destination is within bounds, move the endpoint towards it
-        destX = handX + XKey
-        destY = handY + YKey
-        destZ = handZ + ZKey
+        # If destination is within bounds, move the endpoint towards it
+        model.destX = model.handX + XKey
+        model.destY = model.handY + YKey
+        model.destZ = model.handZ + ZKey
+        model.update()
 
-        # Move hand towards destination if destination is in range or moving to destination will bring it in range
-        if( (handX - baseX) ** 2 + (handY - baseY) ** 2 + (handZ - baseZ) ** 2< (l1 + l2 - 2)**2
-            or
-            (destX - baseX) ** 2 + (destY - baseY) ** 2 + (destZ - baseZ) ** 2 < (l1 + l2 - 2)**2
-        ):
-            handX = destX
-            handY = destY
-            handZ = destZ
-
-        # Get rotations of elbow relative to the Y plane and hand relative to base
-        rotHand = CartesianToCylindrical(handX, handY, handZ)[1]
-        rotElbow = CartesianToCylindrical(elbowX, elbowY, elbowZ)[1]
-        # Rotate the points to be 0 on the Y plane
-        HandXRotated, HandYRotated, HandZRotated = RotateCartesian(handX, handY, handZ, -rotHand)
-        elbowXRotated, elbowYRotated, elbowZRotated = RotateCartesian(elbowX, elbowY, elbowZ, -rotElbow)
-
-        # Distance between base and hand squared
-        c = baseX - HandXRotated
-        p = baseZ - HandZRotated
-        d = c ** 2 + p ** 2
-
-        # Inner max is to prevent a divide by 0 error
-        # Clamp the angle between the base and hand between the range of -1, 1
-        a = max(-1, min(1, (d + l1**2 - l2**2) / max((2 * l1 * math.pow(d, 0.5)), 0.001)))
-        # Angle from elbow to hand
-        # X angle - Y angle * arm orientation
-        t = math.atan2(p, c) - math.acos(a) * -1
-
-        # Displace elbow according to angle to hand
-        elbowXRotated = HandXRotated + l1 * math.cos(t)
-        elbowZRotated = HandZRotated + l1 * math.sin(t)
-
-        # Rotate the arm back out the Y plane and back into its proper rotation
-        # Commented out values make the arm spin in a circle, they are the equivalent to one degree in radians.
-        handX, handY, handZ = RotateCartesian(HandXRotated, HandYRotated, HandZRotated, rotHand)# + 0.0174532925)
-        elbowX, elbowY, elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated, rotElbow + (rotHand - rotElbow))# + 0.0174532925)
-
-        # Warnings for when the simulation doesn't work properly
-        # Distance from Base to hand Exceeds total arm length
-        ArmLengthWarn = math.sqrt(
-            (handX - baseX) ** 2 +
-            (handY - baseY) ** 2 +
-            (handZ - baseZ) ** 2
-            )
-        if(ArmLengthWarn > l1 + l2 + 0.00001):
-            print("DANGER! ARM EXCEEDED LENGTH BY :", (l1 + l2) - ArmLengthWarn)
-        # Distance from base to elbow is exceeded
-        ElbowWarn = math.sqrt(
-            (elbowX - baseX) ** 2 +
-            (elbowY - baseY) ** 2 +
-            (elbowZ - baseZ) ** 2
-            )
-        if(ElbowWarn > l1 + 0.00001):
-            print("DANGER! ELBOW EXCEEDED LENGTH BY :", l1 - ElbowWarn)
-        # Distance from elbow to hand is exceeded
-        handWarn = math.sqrt(
-            (handX - elbowX) ** 2 +
-            (handY - elbowY) ** 2 +
-            (handZ - elbowZ) ** 2
-            )
-        if(handWarn > l2 + 0.00001):
-            print("DANGER! HAND EXCEEDED LENGTH BY :", l2 - handWarn)
+        # and render the screen
+        ikscreen.render(model)
 
 
-        # Rendering
-        # Fill screen with black
-        SCREEN.fill((0, 0, 0))
-        # Make some constants to be used
-        scaling = 1
-        YOffset = (SCREEN_HEIGHT - 20) / 2
-        XOffset = 265
-        XHorizontalOffset = 510
 
-        # X / Y Plane Top View
-        pygame.draw.rect(SCREEN,   (50, 50, 50), (10,10,XHorizontalOffset - 15, SCREEN_HEIGHT - 20))
-        pygame.draw.line(SCREEN,   (255, 255, 255), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), (XOffset + handX * scaling, handY * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (255, 0, 0), (XOffset + handX * scaling, handY * scaling + YOffset), 8 * scaling)
-        pygame.draw.line(SCREEN,   (255, 255, 255), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), (XOffset + baseX * scaling, baseY * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (0, 0, 255), (XOffset + baseX * scaling, baseY * scaling + YOffset), 8 * scaling)
-        pygame.draw.circle(SCREEN, (0, 255, 0), (XOffset + elbowX * scaling, elbowY * scaling + YOffset), 8 * scaling)
-
-        # Z / Y Plane Front View
-        ZYOffset = XHorizontalOffset + 265
-        pygame.draw.rect(SCREEN, (50, 50, 50), (XHorizontalOffset + 5, 10, XHorizontalOffset - 15, SCREEN_HEIGHT - 20))
-        pygame.draw.circle(SCREEN, (0, 0, 255), (ZYOffset + baseY * scaling, baseZ * scaling + YOffset), 8 * scaling)
-        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowY * scaling, elbowZ * scaling + YOffset),(ZYOffset + handY * scaling, handZ * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (0, 255, 0), (ZYOffset + elbowY * scaling, elbowZ * scaling + YOffset), 8 * scaling)
-        pygame.draw.line(SCREEN, (255, 255, 255), (ZYOffset + elbowY * scaling, elbowZ * scaling + YOffset),(ZYOffset + baseY * scaling, baseZ * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (255, 0, 0), (ZYOffset + handY * scaling, handZ * scaling + YOffset), 8 * scaling)
-
-        # X / Z Plane Side View
-        XZOffset = XHorizontalOffset * 2 + 265
-        pygame.draw.rect(SCREEN, (50, 50, 50), (XHorizontalOffset * 2 , 10, XHorizontalOffset - 15, SCREEN_HEIGHT - 20))
-        pygame.draw.circle(SCREEN, (0, 0, 255), (XZOffset + baseX * scaling, baseZ * scaling + YOffset), 8 * scaling)
-        pygame.draw.line(SCREEN, (255, 255, 255), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), (XZOffset + handX * scaling, handZ * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (0, 255, 0), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), 8 * scaling)
-        pygame.draw.line(SCREEN, (255, 255, 255), (XZOffset + elbowX * scaling, elbowZ * scaling + YOffset), (XZOffset + baseX * scaling, baseZ * scaling + YOffset), 2)
-        pygame.draw.circle(SCREEN, (255, 0, 0), (XZOffset + handX * scaling, handZ * scaling + YOffset), 8 * scaling)
-
-        # Text at top of screen
-        draw_text(f"Top View X / Y", 20,10)
-        draw_text(f"Front View Y / Z", XHorizontalOffset + 15, 10)
-        draw_text(f"Side View X / Z", XHorizontalOffset * 2 + 10, 10)
-
-        # Updates Screen
-        pygame.display.update()
 
     pygame.quit()
