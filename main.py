@@ -17,7 +17,6 @@ if (__name__ == "__main__"):
     while run:
         # Ensures the simulation runs no faster than FPS
 
-
         # Handle Keypresses
         for event in pygame.event.get():  # Keypresses
             if event.type == pygame.QUIT:  # If the exit button is pressed this will cause the game to quit
@@ -45,8 +44,5 @@ if (__name__ == "__main__"):
 
         # and render the screen
         ikscreen.render(model)
-
-
-
 
     pygame.quit()

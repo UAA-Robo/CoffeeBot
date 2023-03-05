@@ -5,17 +5,17 @@ helper functions to do some math for us convenientyl
 """
 
 
-def CartesianToCylindrical(x, y, z):
+def cartesian_to_cylindrical(x, y, z):
     # Converts Cartesian Coordiantes to Crylindrical coordinates Returns p, theta, and z
-    return (math.sqrt(x * x + y * y), math.atan2(y, x), z)
+    return math.sqrt(x * x + y * y), math.atan2(y, x), z
 
 
-def CylindricalToCartesian(p, theta, z):
+def cylindrical_to_cartesian(p, theta, z):
     # Converts cylindrical coordinates to cartesian coordinates
-    return (p * math.cos(theta), p * math.sin(theta), z)
+    return p * math.cos(theta), p * math.sin(theta), z
 
 
-def RotateCartesian(x, y, z, rads):
+def rotate_cartesian(x, y, z, rads):
     # Rotates a point around 0,0 using radians
     return (x * math.cos(rads) - y * math.sin(rads),
             x * math.sin(rads) + y * math.cos(rads),
@@ -69,7 +69,7 @@ class Model:
                 (self.handX - self.baseX) ** 2 + (self.handY - self.baseY) ** 2 + (self.handZ - self.baseZ) ** 2 < (
                 self.l1 + self.l2 - 2) ** 2
                 or
-                (self.destX - self.baseX)**2 + (self.destY - self.baseY)**2 + (self.destZ - self.baseZ)**2 < (
+                (self.destX - self.baseX) ** 2 + (self.destY - self.baseY) ** 2 + (self.destZ - self.baseZ) ** 2 < (
                 self.l1 + self.l2 - 2) ** 2
         ):
             self.handX = self.destX
@@ -77,13 +77,12 @@ class Model:
             self.handZ = self.destZ
 
         # Get rotations of elbow relative to the Y plane and hand relative to base
-        rotHand = CartesianToCylindrical(self.handX, self.handY, self.handZ)[1]
-        rotElbow = CartesianToCylindrical(self.elbowX, self.elbowY, self.elbowZ)[1]
+        rotHand = cartesian_to_cylindrical(self.handX, self.handY, self.handZ)[1]
+        rotElbow = cartesian_to_cylindrical(self.elbowX, self.elbowY, self.elbowZ)[1]
 
         # Rotate the points to be 0 on the Y plane
-        HandXRotated, HandYRotated, HandZRotated = RotateCartesian(self.handX, self.handY, self.handZ, -rotHand)
-        elbowXRotated, elbowYRotated, elbowZRotated = RotateCartesian(self.elbowX, self.elbowY, self.elbowZ, -rotElbow)
-
+        HandXRotated, HandYRotated, HandZRotated = rotate_cartesian(self.handX, self.handY, self.handZ, -rotHand)
+        elbowXRotated, elbowYRotated, elbowZRotated = rotate_cartesian(self.elbowX, self.elbowY, self.elbowZ, -rotElbow)
 
         # Distance between base and hand squared
         c = self.baseX - HandXRotated
@@ -104,9 +103,10 @@ class Model:
 
         # Rotate the arm back out the Y plane and back into its proper rotation
         # Commented out values make the arm spin in a circle, they are the equivalent to one degree in radians.
-        self.handX, self.handY, self.handZ = RotateCartesian(HandXRotated, HandYRotated, HandZRotated, rotHand)  # + 0.0174532925)
-        self.elbowX, self.elbowY, self.elbowZ = RotateCartesian(elbowXRotated, elbowYRotated, elbowZRotated,
-                                                 rotElbow + (rotHand - rotElbow))  # + 0.0174532925)
+        self.handX, self.handY, self.handZ = rotate_cartesian(HandXRotated, HandYRotated, HandZRotated,
+                                                              rotHand)  # + 0.0174532925)
+        self.elbowX, self.elbowY, self.elbowZ = rotate_cartesian(elbowXRotated, elbowYRotated, elbowZRotated,
+                                                                 rotElbow + (rotHand - rotElbow))  # + 0.0174532925)
 
         # Warnings for when the simulation doesn't work properly
         # Distance from Base to hand Exceeds total arm length
@@ -115,7 +115,7 @@ class Model:
             (self.handY - self.baseY) ** 2 +
             (self.handZ - self.baseZ) ** 2
         )
-        if (ArmLengthWarn > self.l1 + self.l2 + 0.00001):
+        if ArmLengthWarn > self.l1 + self.l2 + 0.00001:
             print("DANGER! ARM EXCEEDED LENGTH BY :", (self.l1 + self.l2) - ArmLengthWarn)
         # Distance from base to elbow is exceeded
         ElbowWarn = math.sqrt(
@@ -123,7 +123,7 @@ class Model:
             (self.elbowY - self.baseY) ** 2 +
             (self.elbowZ - self.baseZ) ** 2
         )
-        if (ElbowWarn > self.l1 + 0.00001):
+        if ElbowWarn > self.l1 + 0.00001:
             print("DANGER! ELBOW EXCEEDED LENGTH BY :", self.l1 - ElbowWarn)
         # Distance from elbow to hand is exceeded
         handWarn = math.sqrt(
@@ -131,5 +131,5 @@ class Model:
             (self.handY - self.elbowY) ** 2 +
             (self.handZ - self.elbowZ) ** 2
         )
-        if (handWarn > self.l2 + 0.00001):
+        if handWarn > self.l2 + 0.00001:
             print("DANGER! HAND EXCEEDED LENGTH BY :", self.l2 - handWarn)
