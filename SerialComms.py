@@ -28,7 +28,7 @@ class SerialComms:
         except serial.SerialException as e:
             print(e)
         
-        self.ser.write("Hi from the mothership!")
+        self.ser.write("Hi from the mothership!".encode("utf-8"))
 
 # Driver code
         
