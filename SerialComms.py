@@ -32,4 +32,4 @@ class SerialComms:
 
 # Driver code
         
-ser = SerialComms().with_baudrate(115200).with_port("/dev/cu.usbserial-141430").connect()
+ser = SerialComms().with_baudrate(57600).with_port("/dev/cu.usbserial-AH03B2I9").connect()
