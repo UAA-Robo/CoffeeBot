@@ -16,57 +16,40 @@ robot = p.loadURDF("robot.urdf",start_pos, start_orientation)
 
 
 # Get joints
+joints = {}  # Joints to index values "joint_L1" -> "joint_L6"
 
-joint_L1 = "joint_L1"  
-joint_L1_index = -1
 for i in range(p.getNumJoints(robot)):
-    if p.getJointInfo(robot, i)[1].decode('UTF-8') == joint_L1:
-        joint_L1_index = i
-        break
+    joint_name = p.getJointInfo(robot, i)[1].decode('UTF-8')
+    joints[joint_name] = i
 
 
-# Check if the joint index was found
-if joint_L1_index == -1:
-    print("Joint not found.")
-else:
-    # Initial Position
-    position = 0.0  
 
-    last_time = time.time()
-    INCREMENT_INTERVAL = 0.1  # Time in seconds to wait before next increment
-    POSITION_INCREMENT = 0.01  # Amount by which to increase the joint position
 
-    # Control the joint to move to the target position
-    # Simulation loop
-    while True:
-        # Get the current time
-        current_time = time.time()
-        print(current_time)
+# Initial Position
+position = 0.0  
 
-        # Check if it's time to update the joint position
-        if current_time - last_time >= INCREMENT_INTERVAL:
-            # Update the target position
-            position += POSITION_INCREMENT
-            # Apply the new target position
-            p.setJointMotorControl2(robot, joint_L1_index, p.POSITION_CONTROL, targetPosition=position)
-            # Reset the timer
-            last_time = current_time
+last_time = time.time()
+INCREMENT_INTERVAL = 0.1  # Time in seconds to wait before next increment
+POSITION_INCREMENT = 0.01  # Amount by which to increase the joint position
 
-        # Step the simulation
-        p.stepSimulation()
+# Increment all joint positions byPOSITION_INCREMENT every INCREMENT_INTERVAL
+while True:
 
-        # Sleep to simulate real time (this can be adjusted or removed as needed)
-        time.sleep(1/240)
+    current_time = time.time()
 
-# Disconnect when done
+    # Check if it's time to update the joint position
+    if current_time - last_time >= INCREMENT_INTERVAL:
+        position += POSITION_INCREMENT
+
+        # Iterate through each joint and increment position
+        for _, index in joints.items():
+            p.setJointMotorControl2(robot, index, p.POSITION_CONTROL, targetPosition=position)
+
+        last_time = current_time
+
+    p.stepSimulation()
+
+    # Sleep to simulate real time (this can be adjusted or removed as needed)
+    time.sleep(1/240)
+
 p.disconnect()
-
-
-
-# for i in range (10000):
-#     p.stepSimulation()
-#     time.sleep(1./240.)
-
-# cubePos, cubeOrn = p.getBasePositionAndOrientation(robot)
-# print(cubePos,cubeOrn)
-# p.disconnect()
