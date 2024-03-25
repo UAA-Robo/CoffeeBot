@@ -3,7 +3,7 @@
       Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
       For more information, please see http://wiki.ros.org/sw_urdf_exporter 
 
-      Modified 3/24 by Mya Schroder to make it work with Gazebo.
+      Modified 3/24 by Mya Schroder to make it work with Gazebo/pyBullet/etc.
      
 -->
 <robot
@@ -100,11 +100,16 @@
       link="link_L1" />
     <axis
       xyz="0 0 1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+    <limit
+      lower="0"
+      upper="2"
+      effort="15"
+      velocity="0.5" />
   </joint>
   <link
     name="link_L2">
@@ -158,11 +163,16 @@
       link="link_L2" />
     <axis
       xyz="0 0 1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+      <limit
+        lower="0"
+        upper="2"
+        effort="15"
+        velocity="0.5" />
   </joint>
   <link
     name="link_L3">
@@ -216,11 +226,16 @@
       link="link_L3" />
     <axis
       xyz="0 0 -1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+    <limit
+      lower="0"
+      upper="2"
+      effort="15"
+      velocity="0.5" />
   </joint>
   <link
     name="link_L4">
@@ -274,11 +289,16 @@
       link="link_L4" />
     <axis
       xyz="0 0 -1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+    <limit
+      lower="0"
+      upper="2"
+      effort="15"
+      velocity="0.5" />
   </joint>
   <link
     name="link_L5">
@@ -332,11 +352,16 @@
       link="link_L5" />
     <axis
       xyz="0 0 -1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+    <limit
+      lower="0"
+      upper="2"
+      effort="15"
+      velocity="0.5" />
   </joint>
   <link
     name="link_L6">
@@ -390,10 +415,15 @@
       link="link_L6" />
     <axis
       xyz="0 0 -1" />
-    <limit
+    <!-- <limit
       lower="0"
       upper="0"
       effort="0"
-      velocity="0" />
+      velocity="0" /> -->
+    <limit
+      lower="0"
+      upper="2"
+      effort="15"
+      velocity="0.5" />
   </joint>
 </robot>
