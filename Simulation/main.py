@@ -15,13 +15,19 @@ start_orientation = p.getQuaternionFromEuler([0,0,0])
 robot = p.loadURDF("robot.urdf",start_pos, start_orientation)
 
 
-# Get joints
-joints = {}  # Joints to index values "joint_L1" -> "joint_L6"
+# Map joint names (from urdf) to index values "joint_L1" -> "joint_L6"
+joints = {}  
 
 for i in range(p.getNumJoints(robot)):
-    joint_name = p.getJointInfo(robot, i)[1].decode('UTF-8')
+    joint_name = p.getJointInfo(robot, i)[1].decode('UTF-8') 
     joints[joint_name] = i
 
+
+# Zoom in w/ camera
+p.resetDebugVisualizerCamera(cameraDistance=1,
+                             cameraYaw=50,
+                             cameraPitch=-35,
+                             cameraTargetPosition=[0, 0, 0])
 
 
 
@@ -30,9 +36,10 @@ position = 0.0
 
 last_time = time.time()
 INCREMENT_INTERVAL = 0.1  # Time in seconds to wait before next increment
-POSITION_INCREMENT = 0.01  # Amount by which to increase the joint position
+POSITION_INCREMENT = 0.05  # Amount by which to increase the joint position
 
-# Increment all joint positions byPOSITION_INCREMENT every INCREMENT_INTERVAL
+# Increment all joint(s) by POSITION_INCREMENT every INCREMENT_INTERVAL
+# Bounds of rotation limited by urdf
 while True:
 
     current_time = time.time()
@@ -41,9 +48,8 @@ while True:
     if current_time - last_time >= INCREMENT_INTERVAL:
         position += POSITION_INCREMENT
 
-        # Iterate through each joint and increment position
-        for _, index in joints.items():
-            p.setJointMotorControl2(robot, index, p.POSITION_CONTROL, targetPosition=position)
+        # Increments position of 6th joint
+        p.setJointMotorControl2(robot, joints["joint_L6"], p.POSITION_CONTROL, targetPosition=position)
 
         last_time = current_time
 
