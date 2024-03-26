@@ -10,6 +10,16 @@ python -m venv venv
 source venv/bin/activate
 ```
 
+Windows:
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+If this doesn't work, you may have to run this in an Admin shell first:
+```powershell
+set-executionpolicy remotesigned
+```
+
 
 Next, install all the python requirements
 ```bash
