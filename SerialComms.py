@@ -30,6 +30,13 @@ class SerialComms:
         
         self.ser.write("Hi from the mothership!".encode("utf-8"))
 
+    def readline(self):
+        return self.ser.readline().decode("utf-8")
+
 # Driver code
         
-ser = SerialComms().with_baudrate(57600).with_port("/dev/cu.usbserial-AH03B2I9").connect()
+ser = SerialComms().with_baudrate(57600).with_port("/dev/cu.usbserial-AB8AWUGL")
+ser.connect()
+
+while(True):
+    print(ser.readline())
