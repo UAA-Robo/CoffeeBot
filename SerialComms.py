@@ -1,3 +1,8 @@
+"""
+This prints out any data recieved from the arduino connected via the USB
+To test, plug in the arduino (that's running ArduinoCode/ArduinoPiSerial/ArduinoPiSerial.ino),
+replace the .with_port("..."), and run python3 SerialComms.py
+"""
 import serial as serial
 
 
@@ -38,5 +43,6 @@ class SerialComms:
 ser = SerialComms().with_baudrate(57600).with_port("/dev/cu.usbserial-AB8AWUGL")
 ser.connect()
 
+# Print out any recieved serial data
 while(True):
     print(ser.readline())
