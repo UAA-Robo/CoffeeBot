@@ -405,7 +405,7 @@
   </link>
   <joint
     name="joint_L6"
-    type="continuous">
+    type="revolute">
     <origin
       xyz="0 0 0"
       rpy="1.5708 0 0" />
