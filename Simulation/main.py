@@ -17,7 +17,7 @@ start_pos = [0,0,0]
 start_orientation = p.getQuaternionFromEuler([0,0,0])
 robot = p.loadURDF("robot.urdf",start_pos, start_orientation)
 
-# Stick Bot to Ground
+# Stick Bot to Ground *Prevents tipping
 ground_joint = p.createConstraint(plane_ID, -1, 
                                   robot, -1, 
                                   jointType = p.JOINT_FIXED, 
@@ -55,49 +55,94 @@ Link Activity:
 
 
 chain = ikpy.chain.Chain.from_urdf_file("robot.urdf", active_links_mask = [False, True, True, True, True, True, True])
-target_pos = [2, 2, 2] # change
-target_orn = [-1, 0, 0]  # change
+target_pos = [0, 0, 0] # change
+target_orn = [1, 0, 0] # change
 
-ik = chain.inverse_kinematics(target_pos, target_orn, orientation_mode = "X") # returns list of position of each joint
-
-
-
+# ik = chain.inverse_kinematics(target_pos, target_orn, orientation_mode = "Y") # returns list of position of each joint
+ik = chain.inverse_kinematics(target_pos, target_orientation=None, orientation_mode=None)
 
 # Zoom in w/ camera
 p.resetDebugVisualizerCamera(cameraDistance=1,
-                             cameraYaw=50,
-                             cameraPitch=-35,
+                             cameraYaw=90, #50
+                             cameraPitch=-35, #-35
                              cameraTargetPosition=[0, 0, 0])
+
+# check if angle position/rotation are out of bounds
+for i in ik:
+    if i.item() > 2:
+        print("Out of range")
 
 
 # Set incrementation
-joint_1_inc = ik[1].item() / 10.0
-joint_2_inc = ik[2].item() / 10.0
-joint_3_inc = ik[3].item() / 10.0
-joint_4_inc = ik[4].item() / 10.0
-joint_5_inc = ik[5].item() / 10.0
-joint_6_inc = ik[6].item() / 10.0
+joint_1_inc = ik[1].item() / 240.0
+joint_2_inc = ik[2].item() / 240.0
+joint_3_inc = ik[3].item() / 240.0
+joint_4_inc = ik[4].item() / 240.0
+joint_5_inc = ik[5].item() / 240.0
+joint_6_inc = ik[6].item() / 240.0
+
+# Final positions
+final_1 = joint_1_inc
+final_2 = joint_2_inc
+final_3 = joint_3_inc
+final_4 = joint_4_inc
+final_5 = joint_5_inc
+final_6 = joint_6_inc
 
 while True:
 
-    # move joints towards position
-    # p.setJointMotorControl2(robot, joints["joint_L1"], p.POSITION_CONTROL, joint_1_inc)
-    # p.setJointMotorControl2(robot, joints["joint_L2"], p.POSITION_CONTROL, joint_2_inc)
-    # p.setJointMotorControl2(robot, joints["joint_L3"], p.POSITION_CONTROL, joint_3_inc)
-    # p.setJointMotorControl2(robot, joints["joint_L4"], p.POSITION_CONTROL, joint_4_inc)
-    # p.setJointMotorControl2(robot, joints["joint_L5"], p.POSITION_CONTROL, joint_5_inc)
-    # p.setJointMotorControl2(robot, joints["joint_L6"], p.POSITION_CONTROL, joint_6_inc)
 
+    # if joint hasn't reached final position
+    if (final_1 < ik[1].item()):
 
-    p.setJointMotorControl2(robot, joints["joint_L1"], p.POSITION_CONTROL, ik[1].item())
-    p.setJointMotorControl2(robot, joints["joint_L2"], p.POSITION_CONTROL, ik[2].item())
-    p.setJointMotorControl2(robot, joints["joint_L3"], p.POSITION_CONTROL, ik[3].item())
-    p.setJointMotorControl2(robot, joints["joint_L4"], p.POSITION_CONTROL, ik[4].item())
-    p.setJointMotorControl2(robot, joints["joint_L5"], p.POSITION_CONTROL, ik[5].item())
-    p.setJointMotorControl2(robot, joints["joint_L6"], p.POSITION_CONTROL, ik[6].item())
+        # move joints towards position
+        p.setJointMotorControl2(robot, joints["joint_L1"], p.POSITION_CONTROL, final_1)
+        p.setJointMotorControl2(robot, joints["joint_L2"], p.POSITION_CONTROL, final_2)
+        p.setJointMotorControl2(robot, joints["joint_L3"], p.POSITION_CONTROL, final_3)
+        p.setJointMotorControl2(robot, joints["joint_L4"], p.POSITION_CONTROL, final_4)
+        p.setJointMotorControl2(robot, joints["joint_L5"], p.POSITION_CONTROL, final_5)
+        p.setJointMotorControl2(robot, joints["joint_L6"], p.POSITION_CONTROL, final_6)
+
+        # update final positions
+        final_1 += joint_1_inc
+        final_2 += joint_2_inc
+        final_3 += joint_3_inc
+        final_4 += joint_4_inc
+        final_5 += joint_5_inc
+        final_6 += joint_6_inc
+
+    else:
+        # paste over code-- fix later
+        # new position
+        target_pos[0] = int(input(""))
+        target_pos[1] = int(input(""))
+        target_pos[2] = int(input(""))
+
+        ik = chain.inverse_kinematics(target_pos, target_orientation=None, orientation_mode=None)
+
+        # check if angle position/rotation are out of bounds
+        for i in ik:
+            if i.item() > 2:
+                print("Out of range")
+
+        # Set incrementation
+        joint_1_inc = ik[1].item() / 240.0
+        joint_2_inc = ik[2].item() / 240.0
+        joint_3_inc = ik[3].item() / 240.0
+        joint_4_inc = ik[4].item() / 240.0
+        joint_5_inc = ik[5].item() / 240.0
+        joint_6_inc = ik[6].item() / 240.0
+
+        # Final positions
+        final_1 = joint_1_inc
+        final_2 = joint_2_inc
+        final_3 = joint_3_inc
+        final_4 = joint_4_inc
+        final_5 = joint_5_inc
+        final_6 = joint_6_inc
 
     p.stepSimulation()
 
-    time.sleep(1/50)
+    time.sleep(1/240)
 
 p.disconnect()
