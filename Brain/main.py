@@ -9,25 +9,28 @@ from Controller import Controller
 
 # Driver code
         
-ser = SerialComms().with_baudrate(9600).with_port("/dev/cu.usbserial-AH03B2I9")
+ser = SerialComms().with_baudrate(9600).with_port("COM7") # /dev/cu.usbserial-AH03B2I9
 ser.connect()
 
+controller = Controller()
 
-
+# Read inputs
 def read_serial_data():
     while True:
         if ser.ser.in_waiting > 0:  # Check if data is available
             data = ser.read_line()
             if data:
                 print("Read:", data)
-        time.sleep(0.1)  # Small delay to prevent hogging the CPU
+        time.sleep(0.5)  # Small delay to prevent hogging the CPU
 
 # Create and start a new thread for reading serial data
 thread = threading.Thread(target=read_serial_data)
 thread.start()
 
 # Send Speed to Motor
-for speed in range(50, 451, 50):
+while True:
+    input = abs(controller._left_y) # TODO FIX PRIVATE ACCESS, allow negatives
+    speed = input * 400  # Scale from 0 to 200
     #print("Speed: ", speed)
     ser.write_line(str(speed) + '\n')
-    time.sleep(1)
+    time.sleep(0.1)
