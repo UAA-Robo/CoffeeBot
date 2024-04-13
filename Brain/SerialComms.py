@@ -4,8 +4,6 @@ To test, plug in the arduino (that's running ArduinoCode/ArduinoPiSerial/Arduino
 replace the .with_port("..."), and run python3 SerialComms.py
 """
 import serial as serial
-import threading
-import time
 
 class SerialComms:
     def __init__(self) -> None:
@@ -42,28 +40,3 @@ class SerialComms:
     def write_line(self, message:str) -> None:
         self.ser.write(message.encode("utf-8"))
 
-
-# Driver code
-        
-ser = SerialComms().with_baudrate(9600).with_port("/dev/cu.usbserial-AH03B2I9")
-ser.connect()
-
-
-
-def read_serial_data():
-    while True:
-        if ser.ser.in_waiting > 0:  # Check if data is available
-            data = ser.read_line()
-            if data:
-                print("Read:", data)
-        time.sleep(0.1)  # Small delay to prevent hogging the CPU
-
-# Create and start a new thread for reading serial data
-thread = threading.Thread(target=read_serial_data)
-thread.start()
-
-# Send Speed to Motor
-for speed in range(50, 451, 50):
-    #print("Speed: ", speed)
-    ser.write_line(str(speed) + '\n')
-    time.sleep(1)
