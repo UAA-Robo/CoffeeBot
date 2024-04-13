@@ -89,5 +89,5 @@ if __name__ == "__main__":
     controller = Controller()
 
     while True:
-        # controller.print_all_inputs()
+        controller.print_all_inputs()
         time.sleep(0.05)
