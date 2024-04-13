@@ -46,25 +46,27 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    int speed = Serial.parseInt(); // Read speed from serial
-    Serial.println(speed);
-    //int speed = 200;
-    if (speed == 0) {
-      // Stop all steppers if speed is 0
-      stepper_1.stop();
-      stepper_2.stop();
-      stepper_3.stop();
-      stepper_4.stop();
-      stepper_5.stop();
-      stepper_6.stop();
-    } else {
-      // Set new speed and move
-      stepper_1.setSpeed(speed); // Steps/per second
-      stepper_2.setSpeed(speed);
-      stepper_3.setSpeed(speed);
-      stepper_4.setSpeed(speed);
-      stepper_5.setSpeed(speed);
-      stepper_6.setSpeed(speed);
+    String input = Serial.readStringUntil('\n');  // Read until newline character
+    if (input.length() > 0) {
+      int speed = input.toInt();  // Convert read string to integer
+      Serial.println(speed);  // Echo the speed back for debugging
+      if (speed == 0) {
+        // Stop all steppers if speed is 0
+        stepper_1.stop();
+        stepper_2.stop();
+        stepper_3.stop();
+        stepper_4.stop();
+        stepper_5.stop();
+        stepper_6.stop();
+      } else {
+        // Set new speed and move
+        stepper_1.setSpeed(speed); // Steps/per second
+        stepper_2.setSpeed(speed);
+        stepper_3.setSpeed(speed);
+        stepper_4.setSpeed(speed);
+        stepper_5.setSpeed(speed);
+        stepper_6.setSpeed(speed);
+      }
     }
   }
 

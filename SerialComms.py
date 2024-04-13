@@ -65,5 +65,5 @@ thread.start()
 # Send Speed to Motor
 for speed in range(50, 200, 10):
     #print("Speed: ", speed)
-    ser.write_line(str(speed))
+    ser.write_line(str(speed) + '\n')
     time.sleep(5)
