@@ -16,10 +16,10 @@ def main() -> None:
     simulation_thread = threading.Thread(target=simu.start, args=())
     simulation_thread.start()
 
-    # Setup consts
+    # Setup ratios
     
     STEPS_PER_SEC = 50
-    REVOLUTIONS_PER_STEP = 1/ 200.0
+    REVOLUTIONS_PER_STEP = 1 / 200.0
     RADIANS_PER_REVOLUTION = 2 * PI
 
     joint_1_control = 0.0
