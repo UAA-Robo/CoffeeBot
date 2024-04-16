@@ -53,10 +53,10 @@ void loop() {
       char device_type = input[0];
       if (command_type == 'V' && device_type == 'M') {
         int stepper_index = input.substring(1,2).toInt() - 1;
-        int velocity = input.substring(3).toInt();
+        float velocity = input.substring(3).toFloat();
         Serial.println(velocity);  // Echo the speed back for debugging
 
-        if (velocity == 0) steppers[stepper_index].stop();
+        if (velocity <= 10.0) steppers[stepper_index].stop();
         else steppers[stepper_index].setSpeed(velocity);
 
       }

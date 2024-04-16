@@ -113,16 +113,14 @@ class Simulation:
             self._limit_joint_position(5)
             self.joint_positions["joint_L6"] += (self.motor_speeds["joint_L6"] * (current_time - last_time))
             self._limit_joint_position(6)                
-            print(self.joint_positions["joint_L6"])
 
-            # Increments position of 6th joint
+            # Increments positions of all joints
             p.setJointMotorControl2(self.robot, self.joints["joint_L1"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L1"])
             p.setJointMotorControl2(self.robot, self.joints["joint_L2"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L2"])
             p.setJointMotorControl2(self.robot, self.joints["joint_L3"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L3"])
             p.setJointMotorControl2(self.robot, self.joints["joint_L4"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L4"])
             p.setJointMotorControl2(self.robot, self.joints["joint_L5"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L5"])
             p.setJointMotorControl2(self.robot, self.joints["joint_L6"], p.POSITION_CONTROL, targetPosition=self.joint_positions["joint_L6"])
-            # p.setJointMotorControl2(self.robot, self.joints["joint_L6"], p.POSITION_CONTROL, targetPosition=position)
 
             last_time = current_time
 

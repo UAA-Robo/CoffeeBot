@@ -9,7 +9,7 @@ from Brain.SerialComms import SerialComms
 PI = math.pi
 
 def main() -> None:
-    ser = SerialComms().with_baudrate(9600).with_port("COM7") # /dev/cu.usbserial-AH03B2I9
+    ser = SerialComms().with_baudrate(9600).with_port("COM13") # /dev/cu.usbserial-AH03B2I9
     ser.connect()
     
     controller = Controller()
@@ -34,19 +34,19 @@ def main() -> None:
 
     while True:
 
-        joint_1_control = controller.left_joystick_X() # J1 Swivel base
-        joint_2_control = controller.left_joystick_Y() # J2 Main arm up/down
+        joint_1_control = Controller.adjust_for_deadzone(controller.left_joystick_X()) # J1 Swivel base
+        joint_2_control = Controller.adjust_for_deadzone(controller.left_joystick_Y()) # J2 Main arm up/down
         
         if controller.right_bumper():
-            print("pressed!")
-            joint_5_control = controller.right_joystick_Y() # J5 Wrist up/down
-            joint_6_control = controller.right_joystick_X() # J6 Wrist swivel
+            joint_5_control = Controller.adjust_for_deadzone(controller.right_joystick_Y()) # J5 Wrist up/down
+            joint_6_control = Controller.adjust_for_deadzone(controller.right_joystick_X()) # J6 Wrist swivel
             
         else:
-            joint_3_control = controller.right_joystick_Y() # J3 Upper arm up/down
-            joint_4_control = controller.right_joystick_X() # J4 Upper arm swivel
+            joint_3_control = Controller.adjust_for_deadzone(controller.right_joystick_Y()) # J3 Upper arm up/down
+            joint_4_control = Controller.adjust_for_deadzone(controller.right_joystick_X()) # J4 Upper arm swivel
             
-    
+        
+
         # controller.print_all_inputs()
         simu.set_joint_speed(1, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_1_control)
         simu.set_joint_speed(2, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_2_control)
@@ -54,6 +54,8 @@ def main() -> None:
         simu.set_joint_speed(4, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_4_control)
         simu.set_joint_speed(5, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * -joint_5_control)
         simu.set_joint_speed(6, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_6_control)
+
+        print(joint_1_control * STEPS_PER_SEC)
 
         # Send to arduino
         ser.write_line(f"M1V{joint_1_control * STEPS_PER_SEC}\n")

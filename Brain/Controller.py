@@ -36,6 +36,11 @@ class Controller:
         self._read_thread.setDaemon(True)
         self._read_thread.start()
     
+    @staticmethod
+    def adjust_for_deadzone(value: float) -> float: 
+        if abs(value) < 0.10: return 0.0
+        else: return value
+
     def _read_inputs(self) -> None:
         while True:
             events = get_gamepad()
