@@ -4,10 +4,13 @@ import math
 
 from Simulation.main import Simulation
 from Brain.Controller import Controller
+from Brain.SerialComms import SerialComms
 
 PI = math.pi
 
 def main() -> None:
+    ser = SerialComms().with_baudrate(9600).with_port("COM7") # /dev/cu.usbserial-AH03B2I9
+    ser.connect()
     
     controller = Controller()
 
@@ -33,13 +36,16 @@ def main() -> None:
 
         joint_1_control = controller.left_joystick_X() # J1 Swivel base
         joint_2_control = controller.left_joystick_Y() # J2 Main arm up/down
+        
         if controller.right_bumper():
             print("pressed!")
             joint_5_control = controller.right_joystick_Y() # J5 Wrist up/down
             joint_6_control = controller.right_joystick_X() # J6 Wrist swivel
+            
         else:
             joint_3_control = controller.right_joystick_Y() # J3 Upper arm up/down
             joint_4_control = controller.right_joystick_X() # J4 Upper arm swivel
+            
     
         # controller.print_all_inputs()
         simu.set_joint_speed(1, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_1_control)
@@ -49,7 +55,15 @@ def main() -> None:
         simu.set_joint_speed(5, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * -joint_5_control)
         simu.set_joint_speed(6, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_6_control)
 
-        time.sleep(1/240)
+        # Send to arduino
+        ser.write_line(f"M1V{joint_1_control * STEPS_PER_SEC}\n")
+        ser.write_line(f"M2V{joint_2_control * STEPS_PER_SEC}\n")
+        ser.write_line(f"M3V{joint_3_control * STEPS_PER_SEC}\n")
+        ser.write_line(f"M4V{joint_4_control * STEPS_PER_SEC}\n")
+        ser.write_line(f"M5V{joint_5_control * STEPS_PER_SEC}\n")
+        ser.write_line(f"M6V{joint_6_control * STEPS_PER_SEC}\n")
+
+        time.sleep(0.1)  # 1/240
 
 
 
