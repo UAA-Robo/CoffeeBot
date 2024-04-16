@@ -8,9 +8,23 @@ from Brain.SerialComms import SerialComms
 
 PI = math.pi
 
+# Read inputs
+def read_serial_data(ser):
+    while True:
+        if ser.ser.in_waiting > 0:  # Check if data is available
+            data = ser.read_line()
+            if data:
+                print("Read:", data)
+        time.sleep(0.5)  # Small delay to prevent hogging the CPU
+
+
+
 def main() -> None:
     ser = SerialComms().with_baudrate(9600).with_port("COM13") # /dev/cu.usbserial-AH03B2I9
     ser.connect()
+    # Create and start a new thread for reading serial data
+    thread = threading.Thread(target=read_serial_data, args=[ser])
+    thread.start()
     
     controller = Controller()
 
