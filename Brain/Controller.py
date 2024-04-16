@@ -80,6 +80,30 @@ class Controller:
         print(f"Back Button: {self._back_btn}")
         print(f"Start Button: {self._start_btn}")
 
+    def left_joystick_X(self) -> float: return self._left_x
+    def left_joystick_Y(self) -> float: return self._left_y
+    def right_joystick_X(self) -> float: return self._right_x
+    def right_joystick_Y(self) -> float: return self._right_y
+    def left_trigger(self) -> bool: return self._left_trigger == 1
+    def right_trigger(self) -> bool: return self._right_trigger == 1
+    def left_bumper(self) -> bool: return self._left_bmp == 1
+    def right_bumper(self) -> bool: return self._right_bmp == 1
+    def button_A(self) -> bool: return self._a_btn == 1
+    def button_B(self) -> bool: return self._b_btn == 1
+    def button_X(self) -> bool: return self._x_btn == 1
+    def button_Y(self) -> bool: return self._y_btn == 1
+    def dpad_down(self) -> bool: return self._dpad_down == 1
+    def dpad_up(self) -> bool: return self._dpad_up == 1
+    def dpad_left(self) -> bool: return self._dpad_left == 1
+    def dpad_right(self) -> bool: return self._dpad_right == 1
+    def back_button(self) -> bool: return self._back_btn == 1
+    def start_button(self) -> bool: return self._start_btn == 1
+    def left_thumb_down(self) -> bool: return self._left_thumb == 1
+    def right_thumb_down(self) -> bool: return self._right_thumb == 1
+
+
+    
+
 
 
 # TEST code if you run this file

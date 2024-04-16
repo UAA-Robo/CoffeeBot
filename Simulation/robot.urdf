@@ -106,7 +106,7 @@
       effort="0"
       velocity="0" /> -->
     <limit
-      lower="0"
+      lower="-2"
       upper="2"
       effort="15"
       velocity="0.5" />
@@ -169,7 +169,7 @@
       effort="0"
       velocity="0" /> -->
       <limit
-        lower="0"
+        lower="-2"
         upper="2"
         effort="15"
         velocity="0.5" />
@@ -232,7 +232,7 @@
       effort="0"
       velocity="0" /> -->
     <limit
-      lower="0"
+      lower="-2"
       upper="2"
       effort="15"
       velocity="0.5" />
@@ -295,7 +295,7 @@
       effort="0"
       velocity="0" /> -->
     <limit
-      lower="0"
+      lower="-2"
       upper="2"
       effort="15"
       velocity="0.5" />
@@ -358,7 +358,7 @@
       effort="0"
       velocity="0" /> -->
     <limit
-      lower="0"
+      lower="-2"
       upper="2"
       effort="15"
       velocity="0.5" />
@@ -421,7 +421,7 @@
       effort="0"
       velocity="0" /> -->
     <limit
-      lower="0"
+      lower="-2"
       upper="2"
       effort="15"
       velocity="0.5" />
