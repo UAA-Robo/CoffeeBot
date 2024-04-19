@@ -1,3 +1,8 @@
+"""
+To test, plug in the arduino (that's running ArduinoCode/ArduinoPiSerial/ArduinoPiSerial.ino),
+replace the .with_port("...") with the proper port, and run python3 SerialComms.py
+"""
+
 import threading
 import time
 import math
@@ -21,15 +26,16 @@ def read_serial_data(ser):
 
 def main() -> None:
 
-    try:
-        ser = SerialComms().with_baudrate(9600).with_port("COM13") # /dev/cu.usbserial-AH03B2I9
-        ser.connect()
-        # Create and start a new thread for reading serial data
-        thread = threading.Thread(target=read_serial_data, args=[ser])
-        thread.start()
-    except:
-        ser = None
-        pass # TODO better error catching
+    # try:
+    ser = SerialComms().with_baudrate(9600).with_port("COM7") # /dev/cu.usbserial-AH03B2I9 COM13
+    ser.connect()
+    # Create and start a new thread for reading serial data
+    thread = threading.Thread(target=read_serial_data, args=[ser])
+    # thread.start()
+    # except:
+    #     ser = None
+    #     print("Arduino NOT connected!")
+    #    # TODO better error catching
     
     controller = Controller()
 
