@@ -20,11 +20,16 @@ def read_serial_data(ser):
 
 
 def main() -> None:
-    ser = SerialComms().with_baudrate(9600).with_port("COM13") # /dev/cu.usbserial-AH03B2I9
-    ser.connect()
-    # Create and start a new thread for reading serial data
-    thread = threading.Thread(target=read_serial_data, args=[ser])
-    thread.start()
+
+    try:
+        ser = SerialComms().with_baudrate(9600).with_port("COM13") # /dev/cu.usbserial-AH03B2I9
+        ser.connect()
+        # Create and start a new thread for reading serial data
+        thread = threading.Thread(target=read_serial_data, args=[ser])
+        thread.start()
+    except:
+        ser = None
+        pass # TODO better error catching
     
     controller = Controller()
 
@@ -72,12 +77,14 @@ def main() -> None:
         print(joint_1_control * STEPS_PER_SEC)
 
         # Send to arduino
-        ser.write_line(f"M1V{joint_1_control * STEPS_PER_SEC}\n")
-        ser.write_line(f"M2V{joint_2_control * STEPS_PER_SEC}\n")
-        ser.write_line(f"M3V{joint_3_control * STEPS_PER_SEC}\n")
-        ser.write_line(f"M4V{joint_4_control * STEPS_PER_SEC}\n")
-        ser.write_line(f"M5V{joint_5_control * STEPS_PER_SEC}\n")
-        ser.write_line(f"M6V{joint_6_control * STEPS_PER_SEC}\n")
+        if ser:
+            print("---------------------------HERERERER", ser)
+            ser.write_line(f"M1V{joint_1_control * STEPS_PER_SEC}\n")
+            ser.write_line(f"M2V{joint_2_control * STEPS_PER_SEC}\n")
+            ser.write_line(f"M3V{joint_3_control * STEPS_PER_SEC}\n")
+            ser.write_line(f"M4V{joint_4_control * STEPS_PER_SEC}\n")
+            ser.write_line(f"M5V{joint_5_control * STEPS_PER_SEC}\n")
+            ser.write_line(f"M6V{joint_6_control * STEPS_PER_SEC}\n")
 
         time.sleep(0.1)  # 1/240
 
