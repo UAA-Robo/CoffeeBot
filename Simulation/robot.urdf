@@ -8,6 +8,16 @@
 -->
 <robot
   name="PAROL6">
+  <!-- Define a 'world' link which represents the world frame (immovable) -->
+  <link name="world"/>
+
+  <!-- Define a fixed joint that attaches 'base_link' to the 'world' frame -->
+  <joint name="base_to_world" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
   <link
     name="base_link">
     <inertial>
