@@ -5,13 +5,11 @@ replace the .with_port("...") with the proper port, and run python3 SerialComms.
 
 import threading
 import time
-import math
 
 from Simulation.main import Simulation
 from Brain.Controller import Controller
 from Brain.SerialComms import SerialComms
-
-PI = math.pi
+from Motor import Motor, Servo
 
 # Read inputs
 def read_serial_data(ser):
@@ -44,11 +42,22 @@ def main() -> None:
     simulation_thread = threading.Thread(target=simu.start, args=())
     simulation_thread.start()
 
-    # Setup ratios
-    
-    STEPS_PER_SEC = 50
-    REVOLUTIONS_PER_STEP = 1 / 200.0
-    RADIANS_PER_REVOLUTION = 2 * PI
+    motor_1 = Motor(1, simu, ser)
+    motor_1.set_steps_per_rev(1600)
+    motor_1.set_speed(256)
+    motor_2 = Motor(2, simu, ser)
+    motor_2.set_steps_per_rev(200)
+    motor_2.set_speed(72)
+    motor_3 = Motor(3, simu, ser)
+    motor_3.set_speed(72)
+    motor_4 = Motor(4, simu, ser)
+    motor_4.set_speed(72)
+    motor_5 = Motor(5, simu, ser)
+    motor_5.set_speed(72)
+    motor_6 = Motor(6, simu, ser)
+    motor_6.set_speed(72)
+    claw_servo = Servo(7, simu, ser)
+
 
     joint_1_control = 0.0
     joint_2_control = 0.0
@@ -56,41 +65,38 @@ def main() -> None:
     joint_4_control = 0.0
     joint_5_control = 0.0
     joint_6_control = 0.0
+    joint_7_control = 0
 
     while True:
 
         joint_1_control = Controller.adjust_for_deadzone(controller.left_joystick_X()) # J1 Swivel base
         joint_2_control = Controller.adjust_for_deadzone(controller.left_joystick_Y()) # J2 Main arm up/down
+        if (abs(joint_1_control) > abs(joint_2_control)): joint_2_control = 0.0
+        elif (abs(joint_2_control) > abs(joint_1_control)): joint_1_control = 0.0
         
         if controller.right_bumper():
             joint_5_control = Controller.adjust_for_deadzone(controller.right_joystick_Y()) # J5 Wrist up/down
             joint_6_control = Controller.adjust_for_deadzone(controller.right_joystick_X()) # J6 Wrist swivel
+            if (abs(joint_5_control) > abs(joint_6_control)): joint_6_control = 0.0
+            elif (abs(joint_6_control) > abs(joint_5_control)): joint_5_control = 0.0
             
         else:
             joint_3_control = Controller.adjust_for_deadzone(controller.right_joystick_Y()) # J3 Upper arm up/down
             joint_4_control = Controller.adjust_for_deadzone(controller.right_joystick_X()) # J4 Upper arm swivel
-            
-        
+            if (abs(joint_3_control) > abs(joint_4_control)): joint_4_control = 0.0
+            elif (abs(joint_4_control) > abs(joint_3_control)): joint_3_control = 0.0
+        if controller.right_trigger(): joint_7_control = 1
+        elif controller.left_trigger(): joint_7_control = -1
+        else: joint_7_control = 0
 
-        # controller.print_all_inputs()
-        simu.set_joint_speed(1, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_1_control)
-        simu.set_joint_speed(2, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_2_control)
-        simu.set_joint_speed(3, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * -joint_3_control)
-        simu.set_joint_speed(4, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_4_control)
-        simu.set_joint_speed(5, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * -joint_5_control)
-        simu.set_joint_speed(6, STEPS_PER_SEC * REVOLUTIONS_PER_STEP * RADIANS_PER_REVOLUTION * joint_6_control)
-
-        print(joint_1_control * STEPS_PER_SEC)
-
-        # Send to arduino
-        if ser:
-            print("---------------------------HERERERER", ser)
-            ser.write_line(f"M1V{joint_1_control * STEPS_PER_SEC}\n")
-            ser.write_line(f"M2V{joint_2_control * STEPS_PER_SEC}\n")
-            ser.write_line(f"M3V{joint_3_control * STEPS_PER_SEC}\n")
-            ser.write_line(f"M4V{joint_4_control * STEPS_PER_SEC}\n")
-            ser.write_line(f"M5V{joint_5_control * STEPS_PER_SEC}\n")
-            ser.write_line(f"M6V{joint_6_control * STEPS_PER_SEC}\n")
+        print(joint_3_control)
+        motor_1.move(joint_1_control)
+        motor_2.move(joint_2_control)
+        motor_3.move(joint_3_control)
+        motor_4.move(joint_4_control)
+        motor_5.move(joint_5_control)
+        motor_6.move(joint_6_control)
+        claw_servo.move(joint_7_control)
 
         time.sleep(0.1)  # 1/240
 
