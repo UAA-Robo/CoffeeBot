@@ -55,6 +55,7 @@ class Servo:
 
     def _move_serial(self) -> None:
         self.serial.write_line(f"M{self.ID}V{self.current_velocity}\n")
+        print("Moved motor ", self.ID)
 
     def move(self, input: float) -> None:
         self.current_velocity = input

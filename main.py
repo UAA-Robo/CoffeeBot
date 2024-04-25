@@ -56,7 +56,7 @@ def main() -> None:
     motor_5.set_speed(72)
     motor_6 = Motor(6, simu, ser)
     motor_6.set_speed(72)
-    claw_servo = Servo(7, simu, ser)
+    # claw_servo = Servo(7, simu, ser)
 
 
     joint_1_control = 0.0
@@ -65,7 +65,7 @@ def main() -> None:
     joint_4_control = 0.0
     joint_5_control = 0.0
     joint_6_control = 0.0
-    joint_7_control = 0
+    # joint_7_control = 0
 
     while True:
 
@@ -85,9 +85,9 @@ def main() -> None:
             joint_4_control = Controller.adjust_for_deadzone(controller.right_joystick_X()) # J4 Upper arm swivel
             if (abs(joint_3_control) > abs(joint_4_control)): joint_4_control = 0.0
             elif (abs(joint_4_control) > abs(joint_3_control)): joint_3_control = 0.0
-        if controller.right_trigger(): joint_7_control = 1
-        elif controller.left_trigger(): joint_7_control = -1
-        else: joint_7_control = 0
+        # if controller.right_trigger(): joint_7_control = 1
+        # elif controller.left_trigger(): joint_7_control = -1
+        # else: joint_7_control = 0
 
         print(joint_3_control)
         motor_1.move(joint_1_control)
@@ -96,7 +96,7 @@ def main() -> None:
         motor_4.move(joint_4_control)
         motor_5.move(joint_5_control)
         motor_6.move(joint_6_control)
-        claw_servo.move(joint_7_control)
+        # claw_servo.move(joint_7_control)
 
         time.sleep(0.1)  # 1/240
 
