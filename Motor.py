@@ -29,7 +29,8 @@ class Motor:
         self.simulation.set_joint_speed(self.ID, self.current_velocity * (1 / float(self.steps_per_rev)) * RADIANS_PER_REVOLUTION / 48.0)
 
     def _move_serial(self) -> None:
-        self.serial.write_line(f"M{self.ID}V{self.current_velocity}\n")
+        if self.serial:
+            self.serial.write_line(f"M{self.ID}V{self.current_velocity}\n")
 
     def move(self, input: float) -> None:
         input = round(input, 1)
@@ -54,8 +55,9 @@ class Servo:
         ...
 
     def _move_serial(self) -> None:
-        self.serial.write_line(f"M{self.ID}V{self.current_velocity}\n")
-        print("Moved motor ", self.ID)
+        if self.serial:
+            self.serial.write_line(f"M{self.ID}V{self.current_velocity}\n")
+            print("Moved motor ", self.ID)
 
     def move(self, input: float) -> None:
         self.current_velocity = input
